@@ -4,11 +4,56 @@
 
 ## 与原版的区别
 
-| 项目 | 原版 pywencai | 本版本 buyu_pywencai |
-|------|-------------|-------------------|
-| TOKEN_SERVER_TIME | 硬编码 2022 年时间戳 | 动态获取当前时间 |
-| Cookie/请求头名 | `v-nixeh`（旧版反写） | `hexin-v`（与当前问财一致） |
-| hexin-v.bundle.js | 旧版打包 | 重新打包 |
+基于原版 [pywencai](https://github.com/zsrl/pywencai) v0.13.1 修改，共改动 3 个文件：
+
+### 1. `pywencai/hexin-v.js` — hexin-v 反爬 token 源码
+
+**修改点 A：TOKEN_SERVER_TIME 动态化**
+
+原版硬编码了 2022 年的时间戳，导致 token 中时间信息与实际严重偏差（差 3 年+），问财服务端可能随时加严时间校验。
+
+```javascript
+// 原版（第13行）
+var TOKEN_SERVER_TIME = 1670329000.280;  // 2022-12-06 固定值
+
+// 本版本
+var TOKEN_SERVER_TIME = Date.now() / 1000;  // 动态获取当前时间
+```
+
+**修改点 B：Cookie/请求头名称对齐问财当前版本**
+
+原版使用 `v-nixeh`（即 `hexin-v` 的反写），这是旧版 chameleon.js 的写法。问财当前前端已改为正写 `hexin-v`。
+
+```javascript
+// 原版（第1404行参数数组中）
+"v-nixeh"    // hexin-v 反写，旧版风格
+
+// 本版本
+"hexin-v"    // 正写，与当前问财前端一致
+```
+
+### 2. `pywencai/hexin-v.bundle.js` — webpack 打包产物
+
+基于修改后的 `hexin-v.js` 重新执行 `npx webpack` 生成，包含上述两处修改。
+
+### 3. `pywencai/package.json` — Node.js 依赖版本
+
+依赖小版本升级（npm install 时自动更新）：
+
+| 依赖 | 原版 | 本版本 |
+|------|------|--------|
+| bufferutil | ^4.0.7 | ^4.1.0 |
+| utf-8-validate | ^6.0.3 | ^6.0.6 |
+
+### 未修改的文件
+
+以下核心文件均未改动，与原版完全一致：
+
+- `pywencai/__init__.py` — 包入口
+- `pywencai/wencai.py` — 主逻辑（两步请求：get-robot-data → getDataList）
+- `pywencai/convert.py` — 响应解析（JSON 路径提取、components 解析）
+- `pywencai/headers.py` — 请求头生成（调用 hexin-v.bundle.js 获取 token）
+- `pywencai/webpack.config.js` — webpack 配置
 
 ## 声明
 
