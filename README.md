@@ -27,7 +27,7 @@
 ```bash
 git clone https://github.com/zhaobuyu/buyu_pywencai.git
 cd buyu_pywencai
-pip install -e .
+pip install .
 ```
 
 ## Demo
