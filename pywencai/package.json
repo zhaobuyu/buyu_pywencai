@@ -9,10 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bufferutil": "^4.0.7",
+    "bufferutil": "^4.1.0",
     "canvas": "^2.11.2",
     "jsdom": "^22.1.0",
-    "utf-8-validate": "^6.0.3"
+    "utf-8-validate": "^6.0.6"
   },
   "devDependencies": {
     "webpack": "^5.88.2",
